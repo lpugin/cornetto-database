@@ -9,7 +9,7 @@
 
 <div id="website-search-form">
     {% assign action = "/projects.html" %}
-    <form id="search-form" action="{{ action }}">
+    <form id="search-form" action="{{ site.baseurl }}{{ action }}">
         <div class="field">
             <div class="control">
                 <input id="website-search" class="input is-small" type="text" name="q" placeholder="{{ search_input.name[site.active_lang] }} ... ">
