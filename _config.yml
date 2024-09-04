@@ -1,0 +1,45 @@
+title: Using the RISM Online API
+wg_title: 
+email: contact@rism.info
+description: >- # this means to ignore newlines
+  Répertoire International des Sources Musicales – The organization, founded in Paris in 1952, 
+  is the largest and only global operation that documents written musical sources.
+baseurl: "https://lpugin.github.io/jekyll-rism-api" # the subpath of your site, e.g. /blog
+url: "https://rism.info" # the base hostname & protocol for your site, e.g. http://example.com
+twitter_username: RISM_Music
+twitter:
+  card: summary
+
+enable_search: false
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      image: /images/logo-square.png
+
+follow_us:
+  facebook: https://www.facebook.com/RISM.info/
+  twitter: https://twitter.com/RISM_music
+  youtube: https://www.youtube.com/channel/UCWLRkiqVuq8BrYbCArubi_w
+
+sponsors:
+  - url: https://www.musicology.org/
+    logo: logo_ims.png
+  - url: https://www.iaml.info/
+    logo: logo_iaml.png
+  - url: http://www.adwmainz.de/
+    logo: logo_akademie.png
+
+languages: ["en"]
+default_lang: "en"
+exclude_from_localization: ["assets", "javascript", "images", "css", "README.md"]
+parallel_localization: false
+lang_from_path: false
+sass:
+  sourcemap: never
+
+theme: rism-theme
+
+src_link: https://github.com/rism-digital/rism.info/tree/staging
+

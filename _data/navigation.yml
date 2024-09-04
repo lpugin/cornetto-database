@@ -1,0 +1,10 @@
+- name:
+    en: "Home"
+    de: "Startseite"
+    fr: "Accueil"
+  link: /index.html
+- name:
+    en: "Projects"
+    de: "Projekten"
+    fr: "Projects"
+  link: /projects.html
