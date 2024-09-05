@@ -11,10 +11,13 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 
 <div id="search-results-header">
     <h1>Search results</h1>
-    <p id="search-results-p" class="mb-5"><i><span id="search-results-count"></span> result(s)</i></p>
+    <p id="search-results-p" class="mb-5"><i><span id="search-results-count"></span><span id="search-results-show"></span></i></p>
 </div>
 
 <div id="search-results">
+</div>
+
+<div id="pagination" class="buttons">
 </div>
 
 <template id="search-item-template">
@@ -31,10 +34,15 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
         <div class="control">
             <label class="checkbox">
                 <input type="checkbox">
+                <span></span>
             </label>
         </div>
     </div>
 </template>
 
+<template id="pagination-template">
+    <a class="button is-small is-primary is-light"></a>
+</template>
+
 <script src="https://unpkg.com/lunr/lunr.js"></script>
-<script src="{{ site.baseurl}}/scripts/search.js" defer></script>
+<script type="module" src="{{ site.baseurl}}/dist/search.js" defer></script>

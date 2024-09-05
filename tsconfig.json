@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "es2016",
+    "outDir": "dist",
+    "rootDir": "./src",
+    "sourceMap": true
+  },
+  "includes": [
+    "*.ts"
+  ],
+  "exclude": [
+    "_src/*"
+  ]
+}
