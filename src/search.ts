@@ -142,12 +142,16 @@ fetch("./scripts/pages.json")
         }
 
         // Function to create a pagination button
-        function createPaginationButton(page: number, text: string): HTMLAnchorElement {
+        function createPaginationButton(page: number, text: string, current: boolean = false): HTMLAnchorElement {
             const params = new URLSearchParams(location.search);
             const a = document.importNode(paginationTemplate.content, true).querySelector<HTMLAnchorElement>("a")!;
             a.innerHTML = text;
             params.set('page', page.toString());
             a.setAttribute("href", "?" + params.toString());
+            if (current) {
+                a.classList.remove("is-light");
+                a.setAttribute("disabled", "true");
+            }
             return a;
         }
 
@@ -171,7 +175,7 @@ fetch("./scripts/pages.json")
             }
 
             for (let i = startPage; i <= endPage; i++) {
-                paginationDiv.appendChild(createPaginationButton(i, `${i}`));
+                paginationDiv.appendChild(createPaginationButton(i, `${i}`, (page === i)));
             }
 
             // Next Button

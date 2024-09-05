@@ -107,12 +107,16 @@ fetch("./scripts/pages.json")
         }
     }
     // Function to create a pagination button
-    function createPaginationButton(page, text) {
+    function createPaginationButton(page, text, current = false) {
         const params = new URLSearchParams(location.search);
         const a = document.importNode(paginationTemplate.content, true).querySelector("a");
         a.innerHTML = text;
         params.set('page', page.toString());
         a.setAttribute("href", "?" + params.toString());
+        if (current) {
+            a.classList.remove("is-light");
+            a.setAttribute("disabled", "true");
+        }
         return a;
     }
     // Function to render the pagination controls
@@ -131,7 +135,7 @@ fetch("./scripts/pages.json")
             startPage = Math.max(1, endPage - pageWindow + 1);
         }
         for (let i = startPage; i <= endPage; i++) {
-            paginationDiv.appendChild(createPaginationButton(i, `${i}`));
+            paginationDiv.appendChild(createPaginationButton(i, `${i}`, (page === i)));
         }
         // Next Button
         if (page < paginatedResults.totalPages) {
