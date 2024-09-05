@@ -9,6 +9,6 @@
     "*.ts"
   ],
   "exclude": [
-    "_src/*"
+    "_site/*"
   ]
 }
