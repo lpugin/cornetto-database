@@ -103,7 +103,6 @@ fetch("./scripts/pages.json")
                 const instr = output.querySelector<HTMLParagraphElement>("p.instr");
                 const summary = output.querySelector<HTMLParagraphElement>("p.text");
                 const preview = output.querySelector<HTMLIFrameElement>("iframe.preview");
-                console.log(preview);
 
                 const doc = getDocumentById(result.ref);
 
@@ -130,8 +129,6 @@ fetch("./scripts/pages.json")
                 label.innerHTML = `${facet} (${facets[facet]})`;
                 input.setAttribute("name", facetName);
                 input.setAttribute("value", facet);
-
-                console.log(input);
 
                 if (applied.includes(facet)) {
                     input.setAttribute("checked", "true");
