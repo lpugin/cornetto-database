@@ -55,7 +55,7 @@ fetch("./scripts/pages.json")
 
         // Function to paginate results
         function paginateResults(results: LunrResult[], page = 1, resultsPerPage = 10): PaginatedResults {
-            let paginatedResults = new PaginatedResults();
+            const paginatedResults = new PaginatedResults();
             paginatedResults.page = page;
             paginatedResults.resultsPerPage = resultsPerPage;
             paginatedResults.totalResults = results.length;
@@ -71,7 +71,7 @@ fetch("./scripts/pages.json")
 
         // Function to aggregate facets
         function aggregateFacets(results: LunrResult[], facetName: keyof Document): Record<string, number> {
-            let facets: Record<string, number> = {};
+            const facets: Record<string, number> = {};
 
             results.forEach(result => {
                 const doc = documents.find(d => d.id === result.ref);
@@ -201,8 +201,8 @@ fetch("./scripts/pages.json")
         });
 
         let page = 1;
-        let query: string[] = [];
-        let appliedInstr: string[] = [];
+        const query: string[] = [];
+        const appliedInstr: string[] = [];
 
         // Parse the URL parameters
         const params = new URLSearchParams(document.location.search.substring(1));

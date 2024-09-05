@@ -36,7 +36,7 @@ fetch("./scripts/pages.json")
     }
     // Function to paginate results
     function paginateResults(results, page = 1, resultsPerPage = 10) {
-        let paginatedResults = new PaginatedResults();
+        const paginatedResults = new PaginatedResults();
         paginatedResults.page = page;
         paginatedResults.resultsPerPage = resultsPerPage;
         paginatedResults.totalResults = results.length;
@@ -48,7 +48,7 @@ fetch("./scripts/pages.json")
     }
     // Function to aggregate facets
     function aggregateFacets(results, facetName) {
-        let facets = {};
+        const facets = {};
         results.forEach(result => {
             const doc = documents.find(d => d.id === result.ref);
             if (doc) {
@@ -155,8 +155,8 @@ fetch("./scripts/pages.json")
         });
     });
     let page = 1;
-    let query = [];
-    let appliedInstr = [];
+    const query = [];
+    const appliedInstr = [];
     // Parse the URL parameters
     const params = new URLSearchParams(document.location.search.substring(1));
     params.forEach((value, key) => {
