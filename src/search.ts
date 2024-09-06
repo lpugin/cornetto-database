@@ -142,7 +142,6 @@ fetch("./scripts/pages.json")
         function renderFacetOptions(div: HTMLDivElement, facets: Record<string, number>, facetName: string, applied: string[], excluded: string[] = []) {
             div.innerHTML = '';
 
-            console.log(excluded);
             excluded.forEach((facet) => {
                 const option = renderFacetOption(facet, facetName, `<s>${facet}</s>`, true);
                 div.appendChild(option);
@@ -248,6 +247,5 @@ fetch("./scripts/pages.json")
 
         const categoryFacets = aggregateFacets(searchResults, 'instr');
         renderFacetOptions(facetsDiv, categoryFacets, 'instr', appliedInstr);
-
         renderFacetOptions(facetsExcludeDiv, categoryFacets, 'instr_ex', [], excludedInstr);
     });

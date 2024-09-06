@@ -106,7 +106,6 @@ fetch("./scripts/pages.json")
     // Function to render the facets
     function renderFacetOptions(div, facets, facetName, applied, excluded = []) {
         div.innerHTML = '';
-        console.log(excluded);
         excluded.forEach((facet) => {
             const option = renderFacetOption(facet, facetName, `<s>${facet}</s>`, true);
             div.appendChild(option);
