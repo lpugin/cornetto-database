@@ -104,13 +104,24 @@ fetch("./scripts/pages.json")
         return option;
     }
     // Function to render the facets
-    function renderFacetOptions(div, facets, facetName, applied, excluded = []) {
+    function renderFacet(div, facets, facetName, applied) {
+        div.innerHTML = '';
+        for (const facet in facets) {
+            const option = renderFacetOption(facet, facetName, `${facet} (${facets[facet]})`, applied.includes(facet));
+            div.appendChild(option);
+        }
+    }
+    // Function to render the facets
+    function renderFacetExcluded(div, facets, facetName, applied, excluded = []) {
         div.innerHTML = '';
         excluded.forEach((facet) => {
             const option = renderFacetOption(facet, facetName, `<s>${facet}</s>`, true);
             div.appendChild(option);
         });
         for (const facet in facets) {
+            // Do not allow to exclude applied facets
+            if (applied.includes(facet))
+                continue;
             const option = renderFacetOption(facet, facetName, `${facet} (${facets[facet]})`, applied.includes(facet));
             div.appendChild(option);
         }
@@ -196,7 +207,7 @@ fetch("./scripts/pages.json")
     renderResults(paginatedResults);
     renderPagination(paginatedResults);
     const categoryFacets = aggregateFacets(searchResults, 'instr');
-    renderFacetOptions(facetsDiv, categoryFacets, 'instr', appliedInstr);
-    renderFacetOptions(facetsExcludeDiv, categoryFacets, 'instr_ex', [], excludedInstr);
+    renderFacet(facetsDiv, categoryFacets, 'instr', appliedInstr);
+    renderFacetExcluded(facetsExcludeDiv, categoryFacets, 'instr_ex', appliedInstr, excludedInstr);
 });
 //# sourceMappingURL=search.js.map

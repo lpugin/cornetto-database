@@ -139,7 +139,17 @@ fetch("./scripts/pages.json")
         }
 
         // Function to render the facets
-        function renderFacetOptions(div: HTMLDivElement, facets: Record<string, number>, facetName: string, applied: string[], excluded: string[] = []) {
+        function renderFacet(div: HTMLDivElement, facets: Record<string, number>, facetName: string, applied: string[]) {
+            div.innerHTML = '';
+
+            for (const facet in facets) {
+                const option = renderFacetOption(facet, facetName, `${facet} (${facets[facet]})`, applied.includes(facet));
+                div.appendChild(option);
+            }
+        }
+
+        // Function to render the facets
+        function renderFacetExcluded(div: HTMLDivElement, facets: Record<string, number>, facetName: string, applied: string[], excluded: string[] = []) {
             div.innerHTML = '';
 
             excluded.forEach((facet) => {
@@ -148,6 +158,8 @@ fetch("./scripts/pages.json")
             });
 
             for (const facet in facets) {
+                // Do not allow to exclude applied facets
+                if (applied.includes(facet)) continue;
                 const option = renderFacetOption(facet, facetName, `${facet} (${facets[facet]})`, applied.includes(facet));
                 div.appendChild(option);
             }
@@ -246,6 +258,6 @@ fetch("./scripts/pages.json")
         renderPagination(paginatedResults);
 
         const categoryFacets = aggregateFacets(searchResults, 'instr');
-        renderFacetOptions(facetsDiv, categoryFacets, 'instr', appliedInstr);
-        renderFacetOptions(facetsExcludeDiv, categoryFacets, 'instr_ex', [], excludedInstr);
+        renderFacet(facetsDiv, categoryFacets, 'instr', appliedInstr);
+        renderFacetExcluded(facetsExcludeDiv, categoryFacets, 'instr_ex', appliedInstr, excludedInstr);
     });
