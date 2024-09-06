@@ -1,10 +1,10 @@
 # List of common instruments
 instruments = %w[
-  vl va vc db pno fl ob cl bn tr hn tbn tba
+  vl va vc db pno fl ob cl
 ]
 
 # Method to generate a random distribution of instruments
-def random_instrument_distribution(instruments, min_size = 1, max_size = 5)
+def random_instrument_distribution(instruments, min_size = 1, max_size = 6)
   distribution_size = rand(min_size..max_size)
   instruments.sample(distribution_size).join(', ')
 end

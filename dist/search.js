@@ -14,6 +14,7 @@ let searchResultsCount = document.querySelector("#search-results-count");
 let searchResultsShow = document.querySelector("#search-results-show");
 let facetsDiv = document.querySelector("#facets");
 let facetTemplate = document.querySelector("#facet-template");
+let facetsExcludeDiv = document.querySelector("#facets-exclude");
 let paginationDiv = document.querySelector("#pagination");
 let paginationTemplate = document.querySelector("#pagination-template");
 let form = document.querySelector("#search-form");
@@ -88,22 +89,31 @@ fetch("./scripts/pages.json")
             }
         });
     }
+    function renderFacetOption(facet, facetName, facetLabel, checked) {
+        const option = document.importNode(facetTemplate.content, true);
+        const label = option.querySelector("label.checkbox span");
+        const input = option.querySelector("input");
+        label.innerHTML = facetLabel;
+        input.setAttribute("name", facetName);
+        input.setAttribute("value", facet);
+        if (checked) {
+            input.setAttribute("checked", "true");
+        }
+        // Add event listener for selecting this facet
+        input.addEventListener('click', () => { form.submit(); });
+        return option;
+    }
     // Function to render the facets
-    function renderFacetOptions(facets, facetName, applied) {
-        facetsDiv.innerHTML = '';
+    function renderFacetOptions(div, facets, facetName, applied, excluded = []) {
+        div.innerHTML = '';
+        console.log(excluded);
+        excluded.forEach((facet) => {
+            const option = renderFacetOption(facet, facetName, `<s>${facet}</s>`, true);
+            div.appendChild(option);
+        });
         for (const facet in facets) {
-            const option = document.importNode(facetTemplate.content, true);
-            const label = option.querySelector("label.checkbox span");
-            const input = option.querySelector("input");
-            label.innerHTML = `${facet} (${facets[facet]})`;
-            input.setAttribute("name", facetName);
-            input.setAttribute("value", facet);
-            if (applied.includes(facet)) {
-                input.setAttribute("checked", "true");
-            }
-            // Add event listener for selecting this facet
-            input.addEventListener('click', () => { form.submit(); });
-            facetsDiv.appendChild(option);
+            const option = renderFacetOption(facet, facetName, `${facet} (${facets[facet]})`, applied.includes(facet));
+            div.appendChild(option);
         }
     }
     // Function to create a pagination button
@@ -159,6 +169,7 @@ fetch("./scripts/pages.json")
     let page = 1;
     const query = [];
     const appliedInstr = [];
+    const excludedInstr = [];
     // Parse the URL parameters
     const params = new URLSearchParams(document.location.search.substring(1));
     params.forEach((value, key) => {
@@ -169,6 +180,10 @@ fetch("./scripts/pages.json")
         else if (key === 'instr') {
             query.push("+instr:" + value);
             appliedInstr.push(value);
+        }
+        else if (key === 'instr_ex') {
+            query.push("-instr:" + value);
+            excludedInstr.push(value);
         }
         else if (key === "page") {
             page = parseInt(value);
@@ -182,6 +197,7 @@ fetch("./scripts/pages.json")
     renderResults(paginatedResults);
     renderPagination(paginatedResults);
     const categoryFacets = aggregateFacets(searchResults, 'instr');
-    renderFacetOptions(categoryFacets, 'instr', appliedInstr);
+    renderFacetOptions(facetsDiv, categoryFacets, 'instr', appliedInstr);
+    renderFacetOptions(facetsExcludeDiv, categoryFacets, 'instr_ex', [], excludedInstr);
 });
 //# sourceMappingURL=search.js.map

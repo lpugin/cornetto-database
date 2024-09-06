@@ -25,5 +25,10 @@
         <h2 class="mt-3">Instruments</h2>
 
         <div id="facets" class="mt-2"></div>
+
+        <h2 class="mt-3">Instruments (excludes)</h2>
+
+        <div id="facets-exclude" class="mt-2"></div>
+
     </form>
 </div>
