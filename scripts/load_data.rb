@@ -38,6 +38,7 @@ def iterate_json_ld(data, indent = 0)
         $docs << doc
         
         #puts value["summary"]["sourceComposer"]["value"]["none"] if value["summary"]["sourceComposer"]
+        #puts doc["id"]
     end
 end
 
@@ -64,7 +65,8 @@ end
 intr = CSV.read("instruments.csv")
 
 # Starting URL for the paginated API
-start_url = "https://rism.online/institutions/30000516/sources?fq=hide-source-contents%3Atrue&fq=hide-diamm-records%3Atrue"
+# start_url = "https://rism.online/institutions/30000516/sources?fq=hide-source-contents%3Atrue&fq=hide-diamm-records%3Atrue"
+start_url = "https://rism.online/institutions/30000012/sources"
 
 # Start processing paginated results
 iterate_paginated_results(start_url)

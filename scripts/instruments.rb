@@ -10,7 +10,7 @@ def random_instrument_distribution(instruments, min_size = 1, max_size = 6)
 end
 
 # Generate 1000 random distributions
-distributions = 1000.times.map do
+distributions = 5289.times.map do
   random_instrument_distribution(instruments)
 end
 
