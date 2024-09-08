@@ -8,6 +8,10 @@ export class Document {
 // Define class for the paginated results structure
 export class PaginatedResults {
 }
+// Define the filter options interface
+export class CustomFilter {
+}
+;
 let searchResultsDiv = document.querySelector("#search-results");
 let template = document.querySelector("#search-item-template");
 let searchResultsCount = document.querySelector("#search-results-count");
@@ -50,16 +54,13 @@ fetch("./scripts/pages.json")
     // Function to aggregate facets
     function aggregateFacets(results, facetName) {
         const facets = {};
-        results.forEach(result => {
-            const doc = documents.find(d => d.id === result.ref);
-            if (doc) {
-                const facetValue = doc[facetName];
-                if (Array.isArray(facetValue)) {
-                    facetValue.forEach(val => facets[val] = (facets[val] || 0) + 1);
-                }
-                else if (facetValue) {
-                    facets[facetValue] = (facets[facetValue] || 0) + 1;
-                }
+        results.forEach(doc => {
+            const facetValue = doc[facetName];
+            if (Array.isArray(facetValue)) {
+                facetValue.forEach(val => facets[val] = (facets[val] || 0) + 1);
+            }
+            else if (facetValue) {
+                facets[facetValue] = (facets[facetValue] || 0) + 1;
             }
         });
         return facets;
@@ -72,21 +73,18 @@ fetch("./scripts/pages.json")
             const last = Math.min(first + paginatedResults.resultsPerPage - 1, paginatedResults.totalResults);
             searchResultsShow.innerHTML += ` – showing ${first} to ${last}`;
         }
-        paginatedResults.results.forEach(result => {
+        paginatedResults.results.forEach(doc => {
             const output = document.importNode(template.content, true);
             const title = output.querySelector("h3");
             const instr = output.querySelector("p.instr");
             const summary = output.querySelector("p.text");
             const preview = output.querySelector("iframe.preview");
-            const doc = getDocumentById(result.ref);
-            if (doc) {
-                title.innerHTML = doc.id;
-                title.addEventListener('click', togglePreview);
-                summary.innerHTML = doc.body.substring(0, 200) + '...';
-                instr.innerHTML = doc.instr.join(", ");
-                preview.setAttribute("src", doc.id);
-                searchResultsDiv.appendChild(output);
-            }
+            title.innerHTML = doc.id;
+            title.addEventListener('click', togglePreview);
+            summary.innerHTML = doc.body.substring(0, 200) + '...';
+            instr.innerHTML = doc.instr.join(", ");
+            preview.setAttribute("src", doc.id);
+            searchResultsDiv.appendChild(output);
         });
     }
     function renderFacetOption(facet, facetName, facetLabel, checked) {
@@ -163,6 +161,25 @@ fetch("./scripts/pages.json")
             paginationDiv.appendChild(createPaginationButton(paginatedResults.totalPages, "&gt;&gt;"));
         }
     }
+    // Perform a Lunr search
+    function filterResults(results, filterOptions) {
+        // Map results to the original documents
+        var filteredResults = results.map(function (result) {
+            return getDocumentById(result.ref);
+        });
+        // Apply manual filtering based on filterOptions
+        if (filterOptions.instr) {
+            filteredResults = filteredResults.filter(function (doc) {
+                return doc.instr.includes(filterOptions.instr);
+            });
+        }
+        if (filterOptions.author) {
+            filteredResults = filteredResults.filter(function (doc) {
+                //return doc.author === filterOptions.author;
+            });
+        }
+        return filteredResults;
+    }
     documents.forEach(doc => {
         documentLookup[doc.id] = doc;
     });
@@ -199,8 +216,12 @@ fetch("./scripts/pages.json")
             page = parseInt(value);
         }
     });
-    let searchResults;
-    searchResults = idx.search(query.join(" "));
+    let idxResults;
+    idxResults = idx.search(query.join(" "));
+    let filterOptions = new CustomFilter();
+    ;
+    //filterOptions.instr = "vc"; // example to use a custom filter which does not have to be in lunr
+    let searchResults = filterResults(idxResults, filterOptions);
     // Pagination: Get results for page 1 with 20 results per page
     const resultsPerPage = 20;
     const paginatedResults = paginateResults(searchResults, page, resultsPerPage);

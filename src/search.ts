@@ -16,8 +16,14 @@ export class PaginatedResults {
     resultsPerPage: number;
     totalResults: number;
     totalPages: number;
-    results: LunrResult[];
+    results: Document[];
 }
+
+// Define the filter options interface
+export class CustomFilter {
+    instr?: string;
+    author?: string;
+};
 
 let searchResultsDiv = document.querySelector<HTMLDivElement>("#search-results");
 let template = document.querySelector<HTMLTemplateElement>("#search-item-template");
@@ -56,7 +62,7 @@ fetch("./scripts/pages.json")
         }
 
         // Function to paginate results
-        function paginateResults(results: LunrResult[], page = 1, resultsPerPage = 10): PaginatedResults {
+        function paginateResults(results: Document[], page = 1, resultsPerPage = 10): PaginatedResults {
             const paginatedResults = new PaginatedResults();
             paginatedResults.page = page;
             paginatedResults.resultsPerPage = resultsPerPage;
@@ -72,19 +78,16 @@ fetch("./scripts/pages.json")
         }
 
         // Function to aggregate facets
-        function aggregateFacets(results: LunrResult[], facetName: keyof Document): Record<string, number> {
+        function aggregateFacets(results: Document[], facetName: keyof Document): Record<string, number> {
             const facets: Record<string, number> = {};
 
-            results.forEach(result => {
-                const doc = documents.find(d => d.id === result.ref);
-                if (doc) {
-                    const facetValue = doc[facetName];
+            results.forEach(doc => {
+                const facetValue = doc[facetName];
 
-                    if (Array.isArray(facetValue)) {
-                        facetValue.forEach(val => facets[val] = (facets[val] || 0) + 1);
-                    } else if (facetValue) {
-                        facets[facetValue] = (facets[facetValue] || 0) + 1;
-                    }
+                if (Array.isArray(facetValue)) {
+                    facetValue.forEach(val => facets[val] = (facets[val] || 0) + 1);
+                } else if (facetValue) {
+                    facets[facetValue] = (facets[facetValue] || 0) + 1;
                 }
             });
 
@@ -99,23 +102,19 @@ fetch("./scripts/pages.json")
                 const last = Math.min(first + paginatedResults.resultsPerPage - 1, paginatedResults.totalResults);
                 searchResultsShow.innerHTML += ` – showing ${first} to ${last}`;
             }
-            paginatedResults.results.forEach(result => {
+            paginatedResults.results.forEach(doc => {
                 const output = document.importNode(template.content, true);
                 const title = output.querySelector<HTMLHeadingElement>("h3");
                 const instr = output.querySelector<HTMLParagraphElement>("p.instr");
                 const summary = output.querySelector<HTMLParagraphElement>("p.text");
                 const preview = output.querySelector<HTMLIFrameElement>("iframe.preview");
 
-                const doc = getDocumentById(result.ref);
-
-                if (doc) {
-                    title.innerHTML = doc.id;
-                    title.addEventListener('click', togglePreview);
-                    summary.innerHTML = doc.body.substring(0, 200) + '...';
-                    instr.innerHTML = doc.instr.join(", ");
-                    preview.setAttribute("src", doc.id);
-                    searchResultsDiv.appendChild(output);
-                }
+                title.innerHTML = doc.id;
+                title.addEventListener('click', togglePreview);
+                summary.innerHTML = doc.body.substring(0, 200) + '...';
+                instr.innerHTML = doc.instr.join(", ");
+                preview.setAttribute("src", doc.id);
+                searchResultsDiv.appendChild(output);
             });
         }
 
@@ -209,6 +208,30 @@ fetch("./scripts/pages.json")
             }
         }
 
+        // Perform a Lunr search
+        function filterResults(results: LunrResult[], filterOptions: CustomFilter) {
+
+            // Map results to the original documents
+            var filteredResults = results.map(function (result) {
+                return getDocumentById(result.ref);
+            });
+
+            // Apply manual filtering based on filterOptions
+            if (filterOptions.instr) {
+                filteredResults = filteredResults.filter(function (doc) {
+                    return doc.instr.includes(filterOptions.instr);
+                });
+            }
+
+            if (filterOptions.author) {
+                filteredResults = filteredResults.filter(function (doc) {
+                    //return doc.author === filterOptions.author;
+                });
+            }
+
+            return filteredResults;
+        }
+
         documents.forEach(doc => {
             documentLookup[doc.id] = doc;
         });
@@ -247,8 +270,12 @@ fetch("./scripts/pages.json")
             }
         });
 
-        let searchResults: LunrResult[];
-        searchResults = idx.search(query.join(" "));
+        let idxResults: LunrResult[];
+        idxResults = idx.search(query.join(" "));
+
+        let filterOptions: CustomFilter = new CustomFilter();;
+        //filterOptions.instr = "vc"; // example to use a custom filter which does not have to be in lunr
+        let searchResults = filterResults(idxResults, filterOptions);
 
         // Pagination: Get results for page 1 with 20 results per page
         const resultsPerPage = 20;
