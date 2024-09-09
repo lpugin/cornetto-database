@@ -1,4 +1,4 @@
-// Define class for the Object returned by Luns
+// Define class for the Object returned by Lunr
 export class LunrResult {
 }
 // Define class for the document structure
@@ -158,24 +158,20 @@ function renderPagination(paginatedResults) {
         paginationDiv.appendChild(createPaginationButton(paginatedResults.totalPages, "&gt;&gt;"));
     }
 }
-// Function to map the LunrResult list to a Document list and to apply a custom filter 
+// Function to apply a custom filter 
 function filterResults(results, filterOptions) {
-    // Map results to the original documents
-    var filteredResults = results.map(function (result) {
-        return getDocumentById(result.ref);
-    });
     // Apply manual filtering based on filterOptions
     if (filterOptions.instr) {
-        filteredResults = filteredResults.filter(function (doc) {
+        results = results.filter(function (doc) {
             return doc.instr.includes(filterOptions.instr);
         });
     }
     if (filterOptions.author) {
-        filteredResults = filteredResults.filter(function (doc) {
+        results = results.filter(function (doc) {
             //return doc.author === filterOptions.author;
         });
     }
-    return filteredResults;
+    return results;
 }
 // Loads the documents
 fetch("./scripts/pages.json")
@@ -217,16 +213,19 @@ fetch("./scripts/pages.json")
         }
     });
     let idxResults = idx.search(query.join(" "));
+    // Map results to the original documents
+    let searchResults = idxResults.map(function (result) {
+        return getDocumentById(result.ref);
+    });
     let filterOptions = new CustomFilter();
-    ;
     //filterOptions.instr = "vc"; // example to use a custom filter which does not have to be in lunr
-    let searchResults = filterResults(idxResults, filterOptions);
+    let filteredResults = filterResults(searchResults, filterOptions);
     // Pagination: Get results for page 1 with 20 results per page
     const resultsPerPage = 20;
-    const paginatedResults = paginateResults(searchResults, page, resultsPerPage);
+    const paginatedResults = paginateResults(filteredResults, page, resultsPerPage);
     renderResults(paginatedResults);
     renderPagination(paginatedResults);
-    const categoryFacets = aggregateFacets(searchResults, 'instr');
+    const categoryFacets = aggregateFacets(filteredResults, 'instr');
     renderFacet(facetsDiv, categoryFacets, 'instr', appliedInstr);
     renderFacetExcluded(facetsExcludeDiv, categoryFacets, 'instr_ex', appliedInstr, excludedInstr);
 });
