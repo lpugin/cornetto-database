@@ -113,6 +113,7 @@ function renderResults(paginatedResults: PaginatedResults) {
     });
 }
 
+// Function to create a facet option node
 function createFacetOption(facet: string, facetName: string, facetLabel: string, checked: boolean) {
     const option = document.importNode(facetTemplate.content, true);
     const label = option.querySelector<HTMLLabelElement>("label.checkbox span");
@@ -132,7 +133,7 @@ function createFacetOption(facet: string, facetName: string, facetLabel: string,
     return option;
 }
 
-// Function to render the facets
+// Function to render the facet
 function renderFacet(div: HTMLDivElement, facets: Record<string, number>, facetName: string, applied: string[]) {
     div.innerHTML = '';
 
@@ -142,7 +143,7 @@ function renderFacet(div: HTMLDivElement, facets: Record<string, number>, facetN
     }
 }
 
-// Function to render the facets
+// Function to render the facer of excluded values
 function renderFacetExcluded(div: HTMLDivElement, facets: Record<string, number>, facetName: string, applied: string[], excluded: string[] = []) {
     div.innerHTML = '';
 
@@ -159,7 +160,7 @@ function renderFacetExcluded(div: HTMLDivElement, facets: Record<string, number>
     }
 }
 
-// Function to create a pagination button
+// Function to create a pagination button node
 function createPaginationButton(page: number, text: string, current: boolean = false): HTMLAnchorElement {
     const params = new URLSearchParams(location.search);
     const a = document.importNode(paginationTemplate.content, true).querySelector<HTMLAnchorElement>("a")!;
@@ -203,8 +204,8 @@ function renderPagination(paginatedResults: PaginatedResults) {
     }
 }
 
-// Perform a Lunr search
-function filterResults(results: LunrResult[], filterOptions: CustomFilter) {
+// Function to map the LunrResult list to a Document list and to apply a custom filter 
+function filterResults(results: LunrResult[], filterOptions: CustomFilter): Document[] {
 
     // Map results to the original documents
     var filteredResults = results.map(function (result) {
@@ -248,7 +249,7 @@ fetch("./scripts/pages.json")
             });
         });
 
-        let page = 1;
+        let page: number = 1;
         const query: string[] = [];
         const appliedInstr: string[] = [];
         const excludedInstr: string[] = [];
@@ -270,21 +271,20 @@ fetch("./scripts/pages.json")
             }
         });
 
-        let idxResults: LunrResult[];
-        idxResults = idx.search(query.join(" "));
+        let idxResults: LunrResult[] = idx.search(query.join(" "));
 
         let filterOptions: CustomFilter = new CustomFilter();;
         //filterOptions.instr = "vc"; // example to use a custom filter which does not have to be in lunr
-        let searchResults = filterResults(idxResults, filterOptions);
+        let searchResults: Document[] = filterResults(idxResults, filterOptions);
 
         // Pagination: Get results for page 1 with 20 results per page
-        const resultsPerPage = 20;
-        const paginatedResults = paginateResults(searchResults, page, resultsPerPage);
+        const resultsPerPage: number = 20;
+        const paginatedResults: PaginatedResults = paginateResults(searchResults, page, resultsPerPage);
 
         renderResults(paginatedResults);
         renderPagination(paginatedResults);
 
-        const categoryFacets = aggregateFacets(searchResults, 'instr');
+        const categoryFacets: Record<string, number> = aggregateFacets(searchResults, 'instr');
         renderFacet(facetsDiv, categoryFacets, 'instr', appliedInstr);
         renderFacetExcluded(facetsExcludeDiv, categoryFacets, 'instr_ex', appliedInstr, excludedInstr);
     });

@@ -83,6 +83,7 @@ function renderResults(paginatedResults) {
         searchResultsDiv.appendChild(output);
     });
 }
+// Function to create a facet option node
 function createFacetOption(facet, facetName, facetLabel, checked) {
     const option = document.importNode(facetTemplate.content, true);
     const label = option.querySelector("label.checkbox span");
@@ -97,7 +98,7 @@ function createFacetOption(facet, facetName, facetLabel, checked) {
     input.addEventListener('click', () => { form.submit(); });
     return option;
 }
-// Function to render the facets
+// Function to render the facet
 function renderFacet(div, facets, facetName, applied) {
     div.innerHTML = '';
     for (const facet in facets) {
@@ -105,7 +106,7 @@ function renderFacet(div, facets, facetName, applied) {
         div.appendChild(option);
     }
 }
-// Function to render the facets
+// Function to render the facer of excluded values
 function renderFacetExcluded(div, facets, facetName, applied, excluded = []) {
     div.innerHTML = '';
     excluded.forEach((facet) => {
@@ -120,7 +121,7 @@ function renderFacetExcluded(div, facets, facetName, applied, excluded = []) {
         div.appendChild(option);
     }
 }
-// Function to create a pagination button
+// Function to create a pagination button node
 function createPaginationButton(page, text, current = false) {
     const params = new URLSearchParams(location.search);
     const a = document.importNode(paginationTemplate.content, true).querySelector("a");
@@ -157,7 +158,7 @@ function renderPagination(paginatedResults) {
         paginationDiv.appendChild(createPaginationButton(paginatedResults.totalPages, "&gt;&gt;"));
     }
 }
-// Perform a Lunr search
+// Function to map the LunrResult list to a Document list and to apply a custom filter 
 function filterResults(results, filterOptions) {
     // Map results to the original documents
     var filteredResults = results.map(function (result) {
@@ -216,8 +217,7 @@ fetch("./scripts/pages.json")
             page = parseInt(value);
         }
     });
-    let idxResults;
-    idxResults = idx.search(query.join(" "));
+    let idxResults = idx.search(query.join(" "));
     let filterOptions = new CustomFilter();
     ;
     //filterOptions.instr = "vc"; // example to use a custom filter which does not have to be in lunr
