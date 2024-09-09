@@ -28,158 +28,158 @@ let documentLookup = {};
 function getDocumentById(id) {
     return documentLookup[id];
 }
+// Function to toggle the RISM Online iframe (hidden by default)
+function togglePreview(e) {
+    const toggleContent = this.nextElementSibling;
+    if (toggleContent) {
+        toggleContent.style.display = toggleContent.style.display === 'block' ? 'none' : 'block';
+    }
+}
+// Function to paginate results
+function paginateResults(results, page = 1, resultsPerPage = 10) {
+    const paginatedResults = new PaginatedResults();
+    paginatedResults.page = page;
+    paginatedResults.resultsPerPage = resultsPerPage;
+    paginatedResults.totalResults = results.length;
+    paginatedResults.totalPages = Math.ceil(paginatedResults.totalResults / resultsPerPage);
+    const start = (page - 1) * resultsPerPage;
+    const end = start + resultsPerPage;
+    paginatedResults.results = results.slice(start, end);
+    return paginatedResults;
+}
+// Function to aggregate facets
+function aggregateFacets(results, facetName) {
+    const facets = {};
+    results.forEach(doc => {
+        const facetValue = doc[facetName];
+        if (Array.isArray(facetValue)) {
+            facetValue.forEach(val => facets[val] = (facets[val] || 0) + 1);
+        }
+        else if (facetValue) {
+            facets[facetValue] = (facets[facetValue] || 0) + 1;
+        }
+    });
+    return facets;
+}
+// Function to render the results
+function renderResults(paginatedResults) {
+    searchResultsCount.innerHTML = `${paginatedResults.totalResults} result(s)`;
+    if (paginatedResults.totalPages > 1) {
+        const first = paginatedResults.resultsPerPage * (paginatedResults.page - 1) + 1;
+        const last = Math.min(first + paginatedResults.resultsPerPage - 1, paginatedResults.totalResults);
+        searchResultsShow.innerHTML += ` – showing ${first} to ${last}`;
+    }
+    paginatedResults.results.forEach(doc => {
+        const output = document.importNode(template.content, true);
+        const title = output.querySelector("h3");
+        const instr = output.querySelector("p.instr");
+        const summary = output.querySelector("p.text");
+        const preview = output.querySelector("iframe.preview");
+        title.innerHTML = doc.id;
+        title.addEventListener('click', togglePreview);
+        summary.innerHTML = doc.body.substring(0, 200) + '...';
+        instr.innerHTML = doc.instr.join(", ");
+        preview.setAttribute("src", doc.id);
+        searchResultsDiv.appendChild(output);
+    });
+}
+function renderFacetOption(facet, facetName, facetLabel, checked) {
+    const option = document.importNode(facetTemplate.content, true);
+    const label = option.querySelector("label.checkbox span");
+    const input = option.querySelector("input");
+    label.innerHTML = facetLabel;
+    input.setAttribute("name", facetName);
+    input.setAttribute("value", facet);
+    if (checked) {
+        input.setAttribute("checked", "true");
+    }
+    // Add event listener for selecting this facet
+    input.addEventListener('click', () => { form.submit(); });
+    return option;
+}
+// Function to render the facets
+function renderFacet(div, facets, facetName, applied) {
+    div.innerHTML = '';
+    for (const facet in facets) {
+        const option = renderFacetOption(facet, facetName, `${facet} (${facets[facet]})`, applied.includes(facet));
+        div.appendChild(option);
+    }
+}
+// Function to render the facets
+function renderFacetExcluded(div, facets, facetName, applied, excluded = []) {
+    div.innerHTML = '';
+    excluded.forEach((facet) => {
+        const option = renderFacetOption(facet, facetName, `<s>${facet}</s>`, true);
+        div.appendChild(option);
+    });
+    for (const facet in facets) {
+        // Do not allow to exclude applied facets
+        if (applied.includes(facet))
+            continue;
+        const option = renderFacetOption(facet, facetName, `${facet} (${facets[facet]})`, applied.includes(facet));
+        div.appendChild(option);
+    }
+}
+// Function to create a pagination button
+function createPaginationButton(page, text, current = false) {
+    const params = new URLSearchParams(location.search);
+    const a = document.importNode(paginationTemplate.content, true).querySelector("a");
+    a.innerHTML = text;
+    params.set('page', page.toString());
+    a.setAttribute("href", "?" + params.toString());
+    if (current) {
+        a.classList.remove("is-light");
+        a.setAttribute("disabled", "true");
+    }
+    return a;
+}
+// Function to render the pagination controls
+function renderPagination(paginatedResults) {
+    const page = paginatedResults.page;
+    // Previous Button
+    if (page > 1) {
+        paginationDiv.appendChild(createPaginationButton(1, "&lt;&lt;"));
+        paginationDiv.appendChild(createPaginationButton(page - 1, "&lt;"));
+    }
+    // Page Numbers
+    const pageWindow = 5; // Number of pages to display at once
+    let startPage = Math.max(1, page - Math.floor(pageWindow / 2));
+    let endPage = Math.min(paginatedResults.totalPages, startPage + pageWindow - 1);
+    if (endPage - startPage < pageWindow - 1) {
+        startPage = Math.max(1, endPage - pageWindow + 1);
+    }
+    for (let i = startPage; i <= endPage; i++) {
+        paginationDiv.appendChild(createPaginationButton(i, `${i}`, (page === i)));
+    }
+    // Next Button
+    if (page < paginatedResults.totalPages) {
+        paginationDiv.appendChild(createPaginationButton(page + 1, "&gt;"));
+        paginationDiv.appendChild(createPaginationButton(paginatedResults.totalPages, "&gt;&gt;"));
+    }
+}
+// Perform a Lunr search
+function filterResults(results, filterOptions) {
+    // Map results to the original documents
+    var filteredResults = results.map(function (result) {
+        return getDocumentById(result.ref);
+    });
+    // Apply manual filtering based on filterOptions
+    if (filterOptions.instr) {
+        filteredResults = filteredResults.filter(function (doc) {
+            return doc.instr.includes(filterOptions.instr);
+        });
+    }
+    if (filterOptions.author) {
+        filteredResults = filteredResults.filter(function (doc) {
+            //return doc.author === filterOptions.author;
+        });
+    }
+    return filteredResults;
+}
 // Loads the documents
 fetch("./scripts/pages.json")
     .then(response => response.json())
     .then((documents) => {
-    // Function to toggle the RISM Online iframe (hidden by default)
-    function togglePreview(e) {
-        const toggleContent = this.nextElementSibling;
-        if (toggleContent) {
-            toggleContent.style.display = toggleContent.style.display === 'block' ? 'none' : 'block';
-        }
-    }
-    // Function to paginate results
-    function paginateResults(results, page = 1, resultsPerPage = 10) {
-        const paginatedResults = new PaginatedResults();
-        paginatedResults.page = page;
-        paginatedResults.resultsPerPage = resultsPerPage;
-        paginatedResults.totalResults = results.length;
-        paginatedResults.totalPages = Math.ceil(paginatedResults.totalResults / resultsPerPage);
-        const start = (page - 1) * resultsPerPage;
-        const end = start + resultsPerPage;
-        paginatedResults.results = results.slice(start, end);
-        return paginatedResults;
-    }
-    // Function to aggregate facets
-    function aggregateFacets(results, facetName) {
-        const facets = {};
-        results.forEach(doc => {
-            const facetValue = doc[facetName];
-            if (Array.isArray(facetValue)) {
-                facetValue.forEach(val => facets[val] = (facets[val] || 0) + 1);
-            }
-            else if (facetValue) {
-                facets[facetValue] = (facets[facetValue] || 0) + 1;
-            }
-        });
-        return facets;
-    }
-    // Function to render the results
-    function renderResults(paginatedResults) {
-        searchResultsCount.innerHTML = `${paginatedResults.totalResults} result(s)`;
-        if (paginatedResults.totalPages > 1) {
-            const first = paginatedResults.resultsPerPage * (page - 1) + 1;
-            const last = Math.min(first + paginatedResults.resultsPerPage - 1, paginatedResults.totalResults);
-            searchResultsShow.innerHTML += ` – showing ${first} to ${last}`;
-        }
-        paginatedResults.results.forEach(doc => {
-            const output = document.importNode(template.content, true);
-            const title = output.querySelector("h3");
-            const instr = output.querySelector("p.instr");
-            const summary = output.querySelector("p.text");
-            const preview = output.querySelector("iframe.preview");
-            title.innerHTML = doc.id;
-            title.addEventListener('click', togglePreview);
-            summary.innerHTML = doc.body.substring(0, 200) + '...';
-            instr.innerHTML = doc.instr.join(", ");
-            preview.setAttribute("src", doc.id);
-            searchResultsDiv.appendChild(output);
-        });
-    }
-    function renderFacetOption(facet, facetName, facetLabel, checked) {
-        const option = document.importNode(facetTemplate.content, true);
-        const label = option.querySelector("label.checkbox span");
-        const input = option.querySelector("input");
-        label.innerHTML = facetLabel;
-        input.setAttribute("name", facetName);
-        input.setAttribute("value", facet);
-        if (checked) {
-            input.setAttribute("checked", "true");
-        }
-        // Add event listener for selecting this facet
-        input.addEventListener('click', () => { form.submit(); });
-        return option;
-    }
-    // Function to render the facets
-    function renderFacet(div, facets, facetName, applied) {
-        div.innerHTML = '';
-        for (const facet in facets) {
-            const option = renderFacetOption(facet, facetName, `${facet} (${facets[facet]})`, applied.includes(facet));
-            div.appendChild(option);
-        }
-    }
-    // Function to render the facets
-    function renderFacetExcluded(div, facets, facetName, applied, excluded = []) {
-        div.innerHTML = '';
-        excluded.forEach((facet) => {
-            const option = renderFacetOption(facet, facetName, `<s>${facet}</s>`, true);
-            div.appendChild(option);
-        });
-        for (const facet in facets) {
-            // Do not allow to exclude applied facets
-            if (applied.includes(facet))
-                continue;
-            const option = renderFacetOption(facet, facetName, `${facet} (${facets[facet]})`, applied.includes(facet));
-            div.appendChild(option);
-        }
-    }
-    // Function to create a pagination button
-    function createPaginationButton(page, text, current = false) {
-        const params = new URLSearchParams(location.search);
-        const a = document.importNode(paginationTemplate.content, true).querySelector("a");
-        a.innerHTML = text;
-        params.set('page', page.toString());
-        a.setAttribute("href", "?" + params.toString());
-        if (current) {
-            a.classList.remove("is-light");
-            a.setAttribute("disabled", "true");
-        }
-        return a;
-    }
-    // Function to render the pagination controls
-    function renderPagination(paginatedResults) {
-        const page = paginatedResults.page;
-        // Previous Button
-        if (page > 1) {
-            paginationDiv.appendChild(createPaginationButton(1, "&lt;&lt;"));
-            paginationDiv.appendChild(createPaginationButton(page - 1, "&lt;"));
-        }
-        // Page Numbers
-        const pageWindow = 5; // Number of pages to display at once
-        let startPage = Math.max(1, page - Math.floor(pageWindow / 2));
-        let endPage = Math.min(paginatedResults.totalPages, startPage + pageWindow - 1);
-        if (endPage - startPage < pageWindow - 1) {
-            startPage = Math.max(1, endPage - pageWindow + 1);
-        }
-        for (let i = startPage; i <= endPage; i++) {
-            paginationDiv.appendChild(createPaginationButton(i, `${i}`, (page === i)));
-        }
-        // Next Button
-        if (page < paginatedResults.totalPages) {
-            paginationDiv.appendChild(createPaginationButton(page + 1, "&gt;"));
-            paginationDiv.appendChild(createPaginationButton(paginatedResults.totalPages, "&gt;&gt;"));
-        }
-    }
-    // Perform a Lunr search
-    function filterResults(results, filterOptions) {
-        // Map results to the original documents
-        var filteredResults = results.map(function (result) {
-            return getDocumentById(result.ref);
-        });
-        // Apply manual filtering based on filterOptions
-        if (filterOptions.instr) {
-            filteredResults = filteredResults.filter(function (doc) {
-                return doc.instr.includes(filterOptions.instr);
-            });
-        }
-        if (filterOptions.author) {
-            filteredResults = filteredResults.filter(function (doc) {
-                //return doc.author === filterOptions.author;
-            });
-        }
-        return filteredResults;
-    }
     documents.forEach(doc => {
         documentLookup[doc.id] = doc;
     });
