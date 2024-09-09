@@ -83,7 +83,7 @@ function renderResults(paginatedResults) {
         searchResultsDiv.appendChild(output);
     });
 }
-function renderFacetOption(facet, facetName, facetLabel, checked) {
+function createFacetOption(facet, facetName, facetLabel, checked) {
     const option = document.importNode(facetTemplate.content, true);
     const label = option.querySelector("label.checkbox span");
     const input = option.querySelector("input");
@@ -101,7 +101,7 @@ function renderFacetOption(facet, facetName, facetLabel, checked) {
 function renderFacet(div, facets, facetName, applied) {
     div.innerHTML = '';
     for (const facet in facets) {
-        const option = renderFacetOption(facet, facetName, `${facet} (${facets[facet]})`, applied.includes(facet));
+        const option = createFacetOption(facet, facetName, `${facet} (${facets[facet]})`, applied.includes(facet));
         div.appendChild(option);
     }
 }
@@ -109,14 +109,14 @@ function renderFacet(div, facets, facetName, applied) {
 function renderFacetExcluded(div, facets, facetName, applied, excluded = []) {
     div.innerHTML = '';
     excluded.forEach((facet) => {
-        const option = renderFacetOption(facet, facetName, `<s>${facet}</s>`, true);
+        const option = createFacetOption(facet, facetName, `<s>${facet}</s>`, true);
         div.appendChild(option);
     });
     for (const facet in facets) {
         // Do not allow to exclude applied facets
         if (applied.includes(facet))
             continue;
-        const option = renderFacetOption(facet, facetName, `${facet} (${facets[facet]})`, applied.includes(facet));
+        const option = createFacetOption(facet, facetName, `${facet} (${facets[facet]})`, applied.includes(facet));
         div.appendChild(option);
     }
 }
