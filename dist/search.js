@@ -185,7 +185,6 @@ fetch("./scripts/pages.json")
         documentLookup[doc.id] = doc;
     });
     // Create the lunr index
-    // @ts-ignore:next-line
     const idx = lunr(function () {
         this.field('body');
         this.ref('id');

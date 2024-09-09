@@ -25,6 +25,11 @@ export class CustomFilter {
     author?: string;
 };
 
+// Global for allowing use of lunr included via cdn
+declare global {
+    const lunr;
+}
+
 let searchResultsDiv = document.querySelector<HTMLDivElement>("#search-results");
 let template = document.querySelector<HTMLTemplateElement>("#search-item-template");
 let searchResultsCount = document.querySelector<HTMLSpanElement>("#search-results-count");
@@ -238,7 +243,6 @@ fetch("./scripts/pages.json")
         });
 
         // Create the lunr index
-        // @ts-ignore:next-line
         const idx = lunr(function () {
             this.field('body');
             this.ref('id');
