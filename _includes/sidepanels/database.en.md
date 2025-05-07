@@ -8,7 +8,7 @@
 <h1>Search</h1>
 
 <div id="website-search-form">
-    {% assign action = "/projects.html" %}
+    {% assign action = "/database.html" %}
     <form id="search-form" action="{{ site.baseurl }}{{ action }}">
         <div class="field">
             <div class="control">
