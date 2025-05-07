@@ -7,6 +7,7 @@ export class LunrResult {
 export class Document {
     id: string;
     body: string;
+    composer: string;
     instr: string[];
 };
 
@@ -22,7 +23,7 @@ export class PaginatedResults {
 // Define the filter options interface
 export class CustomFilter {
     instr?: string;
-    author?: string;
+    composer?: string;
 };
 
 // Global for allowing use of lunr included via cdn
@@ -34,6 +35,8 @@ let searchResultsDiv = document.querySelector<HTMLDivElement>("#search-results")
 let template = document.querySelector<HTMLTemplateElement>("#search-item-template");
 let searchResultsCount = document.querySelector<HTMLSpanElement>("#search-results-count");
 let searchResultsShow = document.querySelector<HTMLSpanElement>("#search-results-show");
+
+let facetsComposerDiv = document.querySelector<HTMLDivElement>("#facets-composers");
 
 let facetsDiv = document.querySelector<HTMLDivElement>("#facets");
 let facetTemplate = document.querySelector<HTMLTemplateElement>("#facet-template");
@@ -219,9 +222,9 @@ function filterResults(results: Document[], filterOptions: CustomFilter): Docume
         });
     }
 
-    if (filterOptions.author) {
+    if (filterOptions.composer) {
         results = results.filter(function (doc) {
-            //return doc.author === filterOptions.author;
+            return doc.composer === filterOptions.composer;
         });
     }
 
@@ -241,6 +244,7 @@ fetch("./scripts/pages.json")
         const idx = lunr(function () {
             this.field('body');
             this.ref('id');
+            this.field('composer');
             this.field('instr');
 
             documents.forEach(doc => {
@@ -251,14 +255,19 @@ fetch("./scripts/pages.json")
         let page: number = 1;
         const query: string[] = [];
         const appliedInstr: string[] = [];
+        const appliedComposer: string[] = [];
         const excludedInstr: string[] = [];
 
         // Parse the URL parameters
         const params = new URLSearchParams(document.location.search.substring(1));
+        const arr = [];
         params.forEach((value, key) => {
             if (key === 'q' && value !== "") {
                 (document.getElementById("website-search") as HTMLInputElement).value = value;
                 query.push("+" + value);
+            } else if (key === 'composer') {
+                arr.push(value);
+                appliedComposer.push(value);
             } else if (key === 'instr') {
                 query.push("+instr:" + value);
                 appliedInstr.push(value);
@@ -270,7 +279,9 @@ fetch("./scripts/pages.json")
             }
         });
 
+        console.log(query);
         let idxResults: LunrResult[] = idx.search(query.join(" "));
+        //console.log(idxResults);
 
         // Map results to the original documents
         let searchResults: Document[] = idxResults.map(function (result) {
@@ -279,6 +290,7 @@ fetch("./scripts/pages.json")
 
         let filterOptions: CustomFilter = new CustomFilter();
         //filterOptions.instr = "vc"; // example to use a custom filter which does not have to be in lunr
+        filterOptions.composer = arr[0];
         let filteredResults: Document[] = filterResults(searchResults, filterOptions);
 
         // Pagination: Get results for page 1 with 20 results per page
@@ -287,6 +299,9 @@ fetch("./scripts/pages.json")
 
         renderResults(paginatedResults);
         renderPagination(paginatedResults);
+
+        const composerFacets: Record<string, number> = aggregateFacets(filteredResults, 'composer');
+        renderFacet(facetsComposerDiv, composerFacets, 'composer', appliedComposer);
 
         const categoryFacets: Record<string, number> = aggregateFacets(filteredResults, 'instr');
         renderFacet(facetsDiv, categoryFacets, 'instr', appliedInstr);

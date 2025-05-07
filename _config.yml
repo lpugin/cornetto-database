@@ -19,17 +19,12 @@ defaults:
       image: /images/logo-square.png
 
 follow_us:
-  facebook: https://www.facebook.com/RISM.info/
-  twitter: https://twitter.com/RISM_music
-  youtube: https://www.youtube.com/channel/UCWLRkiqVuq8BrYbCArubi_w
+  facebook: https://www.facebook.com/hemgeneve
+  youtube: https://www.youtube.com/channel/UCKWlqRwsdH-5J61BsRUm4Tw
 
 sponsors:
-  - url: https://www.musicology.org/
-    logo: logo_ims.png
-  - url: https://www.iaml.info/
-    logo: logo_iaml.png
-  - url: http://www.adwmainz.de/
-    logo: logo_akademie.png
+  - url: https://www.hesge.ch/hem//
+    logo: hem.jpg
 
 languages: ["en"]
 default_lang: "en"
@@ -40,6 +35,10 @@ sass:
   sourcemap: never
 
 theme: rism-theme
+
+remote_csv:
+  cornetto:
+    source: https://docs.google.com/spreadsheets/d/1XrARBpah9CL_BMj3XRsyw1CL5o8RVheDyuAg5ya0z4I/export?exportFormat=csv
 
 src_link: https://github.com/lpugin/jekyll-rism-api/tree/main
 

@@ -1,14 +1,15 @@
-$rism-editorial-center-primary: hsl(207, 100%, 28%); /* equivalent #005091 */
-$rism-editorial-center-highlight: lighten($rism-editorial-center-primary, 20%);
-$rism-editorial-center-white: #fff;
+$rism-digital-center-primary: hsl(0, 74%, 32%); /* equivalent #8c1515 */
+$primary: $rism-digital-center-primary;
+$link: $rism-digital-center-primary;
+$rism-digital-center-white: #fff;
 
 // colored navbar
-$navbar-background-color: $rism-editorial-center-primary;
-$navbar-item-color: $rism-editorial-center-white;
-$navbar-item-hover-background-color: lighten($rism-editorial-center-primary, 5%);
-$navbar-item-hover-color: $rism-editorial-center-white;
-$navbar-item-active-background-color: darken($rism-editorial-center-primary, 5%);
-$navbar-item-active-color: $rism-editorial-center-white;
+$navbar-background-color: $rism-digital-center-primary;
+$navbar-item-color: $rism-digital-center-white;
+$navbar-item-hover-background-color: lighten($rism-digital-center-primary, 5%);
+$navbar-item-hover-color: $rism-digital-center-white;
+$navbar-item-active-background-color: darken($rism-digital-center-primary, 5%);
+$navbar-item-active-color: $rism-digital-center-white;
 
 // white navbar
 //$navbar-item-hover-background-color: $rism-editorial-center-primary;
@@ -72,7 +73,7 @@ $notification-padding-ltr: 0.75rem;
     .column {
         padding: 5px 0px;
         h1, h2 {
-            color: $rism-editorial-center-primary;
+            color: $rism-digital-center-primary;
             font-weight: 500;
         }
         h1 {
@@ -91,5 +92,13 @@ iframe.preview {
 
 h3.docref {
     text-decoration: underline;
-    color: $rism-editorial-center-primary !important;
+    color: $rism-digital-center-primary !important;
+}
+
+div.scroll-facet {
+    overflow: scroll;
+    max-height: 150px;
+    min-height: 42px;
+    border: lightgrey solid 1px;
+    padding: 8px;
 }

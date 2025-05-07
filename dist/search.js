@@ -16,6 +16,7 @@ let searchResultsDiv = document.querySelector("#search-results");
 let template = document.querySelector("#search-item-template");
 let searchResultsCount = document.querySelector("#search-results-count");
 let searchResultsShow = document.querySelector("#search-results-show");
+let facetsComposerDiv = document.querySelector("#facets-composers");
 let facetsDiv = document.querySelector("#facets");
 let facetTemplate = document.querySelector("#facet-template");
 let facetsExcludeDiv = document.querySelector("#facets-exclude");
@@ -166,9 +167,9 @@ function filterResults(results, filterOptions) {
             return doc.instr.includes(filterOptions.instr);
         });
     }
-    if (filterOptions.author) {
+    if (filterOptions.composer) {
         results = results.filter(function (doc) {
-            //return doc.author === filterOptions.author;
+            return doc.composer === filterOptions.composer;
         });
     }
     return results;
@@ -184,6 +185,7 @@ fetch("./scripts/pages.json")
     const idx = lunr(function () {
         this.field('body');
         this.ref('id');
+        this.field('composer');
         this.field('instr');
         documents.forEach(doc => {
             this.add(doc);
@@ -192,13 +194,19 @@ fetch("./scripts/pages.json")
     let page = 1;
     const query = [];
     const appliedInstr = [];
+    const appliedComposer = [];
     const excludedInstr = [];
     // Parse the URL parameters
     const params = new URLSearchParams(document.location.search.substring(1));
+    const arr = [];
     params.forEach((value, key) => {
         if (key === 'q' && value !== "") {
             document.getElementById("website-search").value = value;
             query.push("+" + value);
+        }
+        else if (key === 'composer') {
+            arr.push(value);
+            appliedComposer.push(value);
         }
         else if (key === 'instr') {
             query.push("+instr:" + value);
@@ -212,19 +220,24 @@ fetch("./scripts/pages.json")
             page = parseInt(value);
         }
     });
+    console.log(query);
     let idxResults = idx.search(query.join(" "));
+    //console.log(idxResults);
     // Map results to the original documents
     let searchResults = idxResults.map(function (result) {
         return getDocumentById(result.ref);
     });
     let filterOptions = new CustomFilter();
     //filterOptions.instr = "vc"; // example to use a custom filter which does not have to be in lunr
+    filterOptions.composer = arr[0];
     let filteredResults = filterResults(searchResults, filterOptions);
     // Pagination: Get results for page 1 with 20 results per page
     const resultsPerPage = 20;
     const paginatedResults = paginateResults(filteredResults, page, resultsPerPage);
     renderResults(paginatedResults);
     renderPagination(paginatedResults);
+    const composerFacets = aggregateFacets(filteredResults, 'composer');
+    renderFacet(facetsComposerDiv, composerFacets, 'composer', appliedComposer);
     const categoryFacets = aggregateFacets(filteredResults, 'instr');
     renderFacet(facetsDiv, categoryFacets, 'instr', appliedInstr);
     renderFacetExcluded(facetsExcludeDiv, categoryFacets, 'instr_ex', appliedInstr, excludedInstr);

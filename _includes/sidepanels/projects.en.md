@@ -22,13 +22,17 @@
             </span>
         </button>
 
+        <h2 class="mt-3">Composers</h2>
+
+        <div id="facets-composers" class="mt-2 scroll-facet"></div>
+
         <h2 class="mt-3">Instruments</h2>
 
-        <div id="facets" class="mt-2"></div>
+        <div id="facets" class="mt-2 scroll-facet"></div>
 
         <h2 class="mt-3">Instruments (excludes)</h2>
 
-        <div id="facets-exclude" class="mt-2"></div>
+        <div id="facets-exclude" class="mt-2 scroll-facet"></div>
 
     </form>
 </div>

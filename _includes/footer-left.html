@@ -1,0 +1,20 @@
+{% if site.follow_us %}
+<div>
+    <p>Follow us:</p>
+    {% if site.follow_us.facebook %}
+    <a class="button is-small is-facebook mr-2" href="{{ site.follow_us.facebook }}" target="_blank">
+        <span class="icon"><i class="fab fa-facebook"></i></span>
+    </a>
+    {% endif %}
+    {% if site.follow_us.twitter %}
+    <a class="button is-small is-twitter mr-2" href="{{ site.follow_us.twitter }}" target="_blank">
+        <span class="icon"><i class="fab fa-twitter"></i></span>
+    </a>
+    {% endif %}
+    {% if site.follow_us.youtube %}
+    <a class="button is-small is-youtube mr-2" href="{{ site.follow_us.youtube }}" target="_blank">
+        <span class="icon"><i class="fab fa-youtube"></i></span>
+    </a>
+    {% endif %}
+</div>
+{% endif %}
