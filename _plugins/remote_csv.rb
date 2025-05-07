@@ -1,5 +1,6 @@
 require 'open-uri'
 require 'csv'
+require 'fileutils'
 
 module Jekyll
   module RemoteCsv
@@ -29,10 +30,22 @@ module Jekyll
               docs << doc
             end
             puts "Writing cornetto-database.json"
-            File.write("cornetto-database.json", docs.to_json)
+            File.write("index/cornetto-database.json", docs.to_json)
           end
         end
       end
     end
+  end
+end
+
+Jekyll::Hooks.register :site, :post_write do |site|
+  source_file = File.join(site.source, 'index', 'cornetto-database.json')
+  target_file = File.join(site.dest, 'cornetto-database.json')
+
+  if File.exist?(source_file)
+    FileUtils.cp(source_file, target_file)
+    Jekyll.logger.info "PostWrite:", "Copied #{source_file} to #{target_file}"
+  else
+    Jekyll.logger.warn "PostWrite:", "Source file #{source_file} not found; nothing copied."
   end
 end
