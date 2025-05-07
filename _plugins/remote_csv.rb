@@ -6,6 +6,8 @@ module Jekyll
     class Generator < ::Jekyll::Generator
       priority :low
 
+      puts "Running Jekyll::Generator"
+
       # Add a csv from the site config to the site.data
       def generate(site)
         return unless site.config['remote_csv']
@@ -26,7 +28,8 @@ module Jekyll
               doc["instr"] = instr.map { |s| s.gsub(/\s*\(.*/, '') }
               docs << doc
             end
-            File.write("cornetto-database.json", docs.to_json)
+            puts "Writing cornetto-database.json"
+            File.write("index/cornetto-database.json", docs.to_json)
           end
         end
       end
