@@ -1,0 +1,7 @@
+<div class="columns">
+    {% for sponsor in site.sponsors %}
+    <div class="column">
+        <a href="{{ sponsor.url }}" target="_blank"><img src="{{ site.baseurl }}/images/footer/{{ sponsor.logo }}"></a>
+    </div>
+    {% endfor %}
+</div>
