@@ -1,8 +1,8 @@
 ---
-title: Projects
+title: Database
 layout: projects
 lang: en
-permalink: /projects.html
+permalink: /database.html
 ---
 
 # Projects description

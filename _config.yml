@@ -1,18 +1,14 @@
-title: Using the RISM Online API
+title: Cornetto Database at the HEM
 wg_title: 
-email: contact@rism.info
-description: >- # this means to ignore newlines
-  Répertoire International des Sources Musicales – The organization, founded in Paris in 1952, 
-  is the largest and only global operation that documents written musical sources.
-baseurl: "/cornetto-database" # the subpath of your site, e.g. /blog
-url: "https://lpugin.github.io" # the base hostname & protocol for your site, e.g. http://example.com
+email: info@rism.digital
+description: "Cornetto Database at the HEM"
+baseurl: "/cornetto-database" # example /cornetto-database
+url: "https://lpugin.github.io"
 twitter_username: RISM_Music
 twitter:
   card: summary
 
 enable_search: false
-
-include: ["index"]
 
 defaults:
   - scope:
@@ -25,7 +21,7 @@ follow_us:
   youtube: https://www.youtube.com/channel/UCKWlqRwsdH-5J61BsRUm4Tw
 
 sponsors:
-  - url: https://www.hesge.ch/hem//
+  - url: https://www.hesge.ch/hem/
     logo: hem.jpg
 
 languages: ["en"]

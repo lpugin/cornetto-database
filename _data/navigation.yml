@@ -4,7 +4,7 @@
     fr: "Accueil"
   link: /index.html
 - name:
-    en: "Projects"
-    de: "Projekten"
-    fr: "Projects"
-  link: /projects.html
+    en: "Database"
+    de: "Datenbank"
+    fr: "Base de données"
+  link: /database.html

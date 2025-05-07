@@ -1,4 +1,5 @@
 _site
 .jekyll-cache
+.ruby-version
 pages.json
 index
