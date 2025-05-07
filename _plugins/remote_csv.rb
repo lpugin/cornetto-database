@@ -29,7 +29,7 @@ module Jekyll
               docs << doc
             end
             puts "Writing cornetto-database.json"
-            File.write("index/cornetto-database.json", docs.to_json)
+            File.write("cornetto-database.json", docs.to_json)
           end
         end
       end
