@@ -175,7 +175,7 @@ function filterResults(results, filterOptions) {
     return results;
 }
 // Loads the documents
-fetch("./cornetto-datatase.json")
+fetch("./cornetto-database.json")
     .then(response => response.json())
     .then((documents) => {
     documents.forEach(doc => {
