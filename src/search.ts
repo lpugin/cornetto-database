@@ -232,7 +232,7 @@ function filterResults(results: Document[], filterOptions: CustomFilter): Docume
 }
 
 // Loads the documents
-fetch("./scripts/pages.json")
+fetch("./index/cornetto-datatase.json")
     .then(response => response.json())
     .then((documents: Document[]) => {
 

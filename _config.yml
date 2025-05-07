@@ -5,12 +5,14 @@ description: >- # this means to ignore newlines
   Répertoire International des Sources Musicales – The organization, founded in Paris in 1952, 
   is the largest and only global operation that documents written musical sources.
 baseurl: "/cornetto-database" # the subpath of your site, e.g. /blog
-url: "https://lpugin.github.io/" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://lpugin.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: RISM_Music
 twitter:
   card: summary
 
 enable_search: false
+
+include: ["index"]
 
 defaults:
   - scope:
