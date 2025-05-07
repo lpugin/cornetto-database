@@ -26,7 +26,7 @@ module Jekyll
               doc["instr"] = instr.map { |s| s.gsub(/\s*\(.*/, '') }
               docs << doc
             end
-            File.write("index/cornetto-database.json", docs.to_json)
+            File.write("cornetto-database.json", docs.to_json)
           end
         end
       end
