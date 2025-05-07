@@ -4,7 +4,7 @@ email: contact@rism.info
 description: >- # this means to ignore newlines
   Répertoire International des Sources Musicales – The organization, founded in Paris in 1952, 
   is the largest and only global operation that documents written musical sources.
-baseurl: "" # the subpath of your site, e.g. /blog
+baseurl: "/cornetto-database" # the subpath of your site, e.g. /blog
 url: "https://lpugin.github.io/" # the base hostname & protocol for your site, e.g. http://example.com
 twitter_username: RISM_Music
 twitter:
@@ -40,5 +40,5 @@ remote_csv:
   cornetto:
     source: https://docs.google.com/spreadsheets/d/1XrARBpah9CL_BMj3XRsyw1CL5o8RVheDyuAg5ya0z4I/export?exportFormat=csv
 
-src_link: https://github.com/lpugin/jekyll-rism-api/tree/main
+src_link: https://github.com/lpugin/cornetto-database/tree/main
 
