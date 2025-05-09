@@ -34,9 +34,9 @@ sass:
 
 theme: rism-theme
 
-remote_csv:
-  cornetto:
-    source: https://docs.google.com/spreadsheets/d/1XrARBpah9CL_BMj3XRsyw1CL5o8RVheDyuAg5ya0z4I/export?exportFormat=csv
+exclude: ["index"]
+
+remote_csv: https://docs.google.com/spreadsheets/d/1XrARBpah9CL_BMj3XRsyw1CL5o8RVheDyuAg5ya0z4I/export?exportFormat=csv
 
 src_link: https://github.com/lpugin/cornetto-database/tree/main
 

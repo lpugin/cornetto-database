@@ -12,6 +12,7 @@ export class PaginatedResults {
 export class CustomFilter {
 }
 ;
+let instrMap = undefined;
 let searchResultsDiv = document.querySelector("#search-results");
 let template = document.querySelector("#search-item-template");
 let searchResultsCount = document.querySelector("#search-results-count");
@@ -107,7 +108,13 @@ function renderResults(paginatedResults) {
         addTextOrHide(doc.composer, composer);
         let titleStr = (doc.title.length > 200) ? doc.title.substring(0, 200) + ' ...' : doc.title;
         title.innerHTML = titleStr;
-        instr.innerHTML = doc.instr.join(", ");
+        if (instrMap) {
+            let originalInstr = doc.instr.map(norm => instrMap[norm]);
+            instr.innerHTML = originalInstr.join(", ");
+        }
+        else {
+            instr.innerHTML = doc.instr.join(", ");
+        }
         addTextOrHide(doc.coeff, coeff);
         addTextOrHide(doc.record_type, record_type);
         addTextOrHide(doc.source_type, source_type);
@@ -134,10 +141,11 @@ function createFacetOption(facet, facetName, facetLabel, checked) {
     return option;
 }
 // Function to render the facet
-function renderFacet(div, facets, facetName, applied) {
+function renderFacet(div, facets, facetName, applied, labelMap = undefined) {
     div.innerHTML = '';
     for (const facet in facets) {
-        const option = createFacetOption(facet, facetName, `${facet} (${facets[facet]})`, applied.includes(facet));
+        let label = (labelMap) ? instrMap[facet] : facet;
+        const option = createFacetOption(facet, facetName, `${label} | ${facets[facet]}`, applied.includes(facet));
         div.appendChild(option);
     }
 }
@@ -145,14 +153,16 @@ function renderFacet(div, facets, facetName, applied) {
 function renderFacetExcluded(div, facets, facetName, applied, excluded = []) {
     div.innerHTML = '';
     excluded.forEach((facet) => {
-        const option = createFacetOption(facet, facetName, `<s>${facet}</s>`, true);
+        let label = (instrMap) ? instrMap[facet] : facet;
+        const option = createFacetOption(facet, facetName, `<s>${label}</s>`, true);
         div.appendChild(option);
     });
     for (const facet in facets) {
         // Do not allow to exclude applied facets
         if (applied.includes(facet))
             continue;
-        const option = createFacetOption(facet, facetName, `${facet} (${facets[facet]})`, applied.includes(facet));
+        let label = (instrMap) ? instrMap[facet] : facet;
+        const option = createFacetOption(facet, facetName, `${label} | ${facets[facet]}`, applied.includes(facet));
         div.appendChild(option);
     }
 }
@@ -208,6 +218,12 @@ function filterResults(results, filterOptions) {
     }
     return results;
 }
+// Loads the instrument map
+fetch("./cornetto-instr-map.json")
+    .then(response => response.json())
+    .then((data) => {
+    instrMap = data;
+});
 // Loads the documents
 fetch("./cornetto-database.json")
     .then(response => response.json())
@@ -281,7 +297,7 @@ fetch("./cornetto-database.json")
     const composerFacets = aggregateFacets(filteredResults, 'composer');
     renderFacet(facetsComposerDiv, composerFacets, 'composer', appliedComposer);
     const categoryFacets = aggregateFacets(filteredResults, 'instr');
-    renderFacet(facetsDiv, categoryFacets, 'instr', appliedInstr);
+    renderFacet(facetsDiv, categoryFacets, 'instr', appliedInstr, instrMap);
     renderFacetExcluded(facetsExcludeDiv, categoryFacets, 'instr_ex', appliedInstr, excludedInstr);
 });
 //# sourceMappingURL=search.js.map
