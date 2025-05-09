@@ -28,14 +28,12 @@ module Jekyll
             doc["composer"] = row["composer"]
             doc["title"] = row["title"]
 
+            # special handling of instrument with normalization and map
             instr = row["instruments"].split(", ") rescue []
-            normalized_instr = instr.map do |s|
-              s_cleaned = s.rstrip.gsub(/[()]/, '_')  # remove ( and )
-              s_cleaned.gsub(/[ -]/, '_')           # replace space or dash with _
-            end
+            normalized_instr = []
             instr.each do |s|
-              s_cleaned = s.rstrip.gsub(/[()]/, '_')  # remove ( and )
-              key = s_cleaned.gsub(/[ -]/, '_') 
+              key = normalize_instr(s)
+              normalized_instr << key
               instr_map[key] = s.rstrip
             end
             doc["instr"] = normalized_instr
@@ -53,6 +51,11 @@ module Jekyll
           File.write("index/cornetto-instr-map.json", instr_map.to_json)
         end
       end
+
+      def normalize_instr(s)
+        s.rstrip.gsub(/[()]/, '').gsub(/[ -]/, '_')
+      end
+
     end
   end
 end
