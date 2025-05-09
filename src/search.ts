@@ -6,9 +6,18 @@ export class LunrResult {
 // Define class for the document structure
 export class Document {
     id: string;
-    body: string;
+    coeff: string;
+    rism_no: string;
+    record_type: string;
+    source_type: string;
     composer: string;
+    title: string
     instr: string[];
+    libraries: string;
+    shelfmark: string;
+    accuracy: string;
+    notes: string;
+    work_needed: string;
 };
 
 // Define class for the paginated results structure
@@ -97,6 +106,17 @@ function aggregateFacets(results: Document[], facetName: keyof Document): Record
     return facets;
 }
 
+// Function to add text or hide element
+function addTextOrHide(text: string, element: HTMLElement)
+{
+    if (text) {
+        element.innerHTML = text
+    }
+    else {
+        element.style.display = 'none';
+    }
+}
+
 // Function to render the results
 function renderResults(paginatedResults: PaginatedResults) {
     searchResultsCount.innerHTML = `${paginatedResults.totalResults} result(s)`;
@@ -107,16 +127,44 @@ function renderResults(paginatedResults: PaginatedResults) {
     }
     paginatedResults.results.forEach(doc => {
         const output = document.importNode(template.content, true);
-        const title = output.querySelector<HTMLHeadingElement>("h3");
-        const instr = output.querySelector<HTMLParagraphElement>("p.instr");
-        const summary = output.querySelector<HTMLParagraphElement>("p.text");
+        const header = output.querySelector<HTMLHeadingElement>("h3");
         const preview = output.querySelector<HTMLIFrameElement>("iframe.preview");
+        const rism = output.querySelector<HTMLDivElement>("div.rism");
+        const rism_link = output.querySelector<HTMLSpanElement>("span.rism_link");
+        const composer = output.querySelector<HTMLSpanElement>("span.composer");
+        const title = output.querySelector<HTMLSpanElement>("span.cornetto-title");
+        const instr = output.querySelector<HTMLSpanElement>("span.instr");
+        const coeff = output.querySelector<HTMLSpanElement>("span.coeff");
+        const source_type = output.querySelector<HTMLSpanElement>("span.source_type");
+        const record_type = output.querySelector<HTMLSpanElement>("span.record_type");
+        const accuracy = output.querySelector<HTMLSpanElement>("span.accuracy");
+        const libraries = output.querySelector<HTMLSpanElement>("span.libraries");
+        const shelfmark = output.querySelector<HTMLSpanElement>("span.shelfmark");
+        const notes = output.querySelector<HTMLSpanElement>("span.notes");
 
-        title.innerHTML = doc.id;
-        title.addEventListener('click', togglePreview);
-        summary.innerHTML = doc.body.substring(0, 200) + '...';
+
+        header.innerHTML = doc.id;
+        if (doc.rism_no) {
+            rism_link.innerHTML = `sources/${doc.rism_no}`;
+            preview.setAttribute("src", `https://rism.online/sources/${doc.rism_no}`);
+            rism.addEventListener('click', togglePreview);
+        }
+        else {
+            rism.style.display = 'none';
+        }
+        addTextOrHide(doc.composer, composer);
+        let titleStr = (doc.title.length > 200) ? doc.title.substring(0, 200) + ' ...' : doc.title;
+        title.innerHTML = titleStr;
         instr.innerHTML = doc.instr.join(", ");
-        preview.setAttribute("src", doc.id);
+        addTextOrHide(doc.coeff, coeff);
+        addTextOrHide(doc.record_type, record_type);
+        addTextOrHide(doc.source_type, source_type);
+        addTextOrHide(doc.accuracy, accuracy);
+        addTextOrHide(doc.libraries, libraries);
+        addTextOrHide(doc.shelfmark, shelfmark);
+        addTextOrHide(doc.notes, notes);
+
+
         searchResultsDiv.appendChild(output);
     });
 }
@@ -242,10 +290,19 @@ fetch("./cornetto-database.json")
 
         // Create the lunr index
         const idx = lunr(function () {
-            this.field('body');
             this.ref('id');
+            this.field('coeff');
+            this.field('rism_no');
+            this.field('record_type');
+            this.field('source_type');
             this.field('composer');
+            this.field('title');
             this.field('instr');
+            this.field('libraries');
+            this.field('shelfmark');
+            this.field('accuracy');
+            this.field('notes');
+            this.field('work_needed');
 
             documents.forEach(doc => {
                 this.add(doc);
@@ -281,7 +338,6 @@ fetch("./cornetto-database.json")
 
         console.log(query);
         let idxResults: LunrResult[] = idx.search(query.join(" "));
-        //console.log(idxResults);
 
         // Map results to the original documents
         let searchResults: Document[] = idxResults.map(function (result) {

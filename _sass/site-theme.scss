@@ -49,20 +49,56 @@ $notification-padding-ltr: 0.75rem;
     }   
 }
 
-iframe.preview {
-    border: solid 1px gray;
-    display: none;
-}
-
-h3.docref {
-    text-decoration: underline;
-    color: $rism-digital-center-primary !important;
-}
-
 div.scroll-facet {
     overflow: scroll;
     max-height: 150px;
     min-height: 42px;
     border: lightgrey solid 1px;
     padding: 8px;
+}
+
+h3.docref {
+    color: $rism-digital-center-primary !important;
+}
+
+div.fields {
+    display: flex;
+    flex-direction: column;
+    > * {
+        margin-bottom: 5px;
+    }
+}
+
+span.rism_link {
+    text-decoration: underline;
+    color: #1d3557;
+    font-weight: bold;
+}
+
+iframe.preview {
+    border: solid 1px gray;
+    display: none;
+}
+
+span.composer {
+    font-weight: 500;
+}
+
+div.cornetto-tags {
+    display: flex;
+    flex-direction: row;
+    span {
+        margin-right: 5px;
+    }
+}
+
+div.examplars {
+    display: flex;
+    flex-direction: row;
+    span.libraries {
+        font-weight: 500;
+    }
+    span {
+        margin-right: 5px;
+    }
 }

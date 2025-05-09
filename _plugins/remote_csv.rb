@@ -7,8 +7,6 @@ module Jekyll
     class Generator < ::Jekyll::Generator
       priority :low
 
-      puts "Running Jekyll::Generator"
-
       # Add a csv from the site config to the site.data
       def generate(site)
         return unless site.config['remote_csv']
@@ -20,16 +18,25 @@ module Jekyll
             site.data[source_name] = csv_data
             site.data[source_name].each do |row|
               doc = {}
-              doc["id"] = row["ref"]
-              doc["body"] = row["title"]
+
+              doc["id"] = row["id"]
+              doc["coeff"] = row["coeff"]
+              doc["rism_no"] = row["rism-no"]
+              doc["record_type"] = row["record-type"]
+              doc["source_type"] = row["source-type"]
               doc["composer"] = row["composer"]
-              # add the instrument from CSV
-              # instr = $instr.find {|row| row[0] == doc["id"]}
+              doc["title"] = row["title"]
               instr = row["instruments"].split(", ") rescue []
               doc["instr"] = instr.map { |s| s.gsub(/\s*\(.*/, '') }
+              doc["libraries"] = row["libraries"]
+              doc["shelfmark"] = row["shelfmark"]
+              doc["accuracy"] = row["accuracy"]
+              doc["notes"] = row["notes"]
+              doc["work_needed"] = row["work-needed"]
+
               docs << doc
             end
-            puts "Writing cornetto-database.json"
+            Jekyll.logger.info "Generator:", "File cornetto-database.json written"
             File.write("index/cornetto-database.json", docs.to_json)
           end
         end

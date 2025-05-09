@@ -23,9 +23,29 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor i
 <template id="search-item-template">
     <div class="mb-5">
         <h3 class="docref mb-1"></h3>
+        <div class="rism icon-text">
+            <span class="icon">
+                <i class="fas fa-arrow-right"></i>
+            </span>
+            <span>Preview <span class="rism_link"></span> in RISM Online</span>
+        </div>
         <iframe class="preview mt-3 mb-1" width="100%" height="500px"></iframe>
-        <p class="text mb-1"></p>
-        <p class="instr is-italic"></p>
+        <div class="fields">
+            <span class="composer mb-1"></span>
+            <span class="cornetto-title mb-1"></span>
+            <span class="instr is-italic"></span>
+            <div class="cornetto-tags">
+                <span class="coeff tag is-light"></span>
+                <span class="source_type tag is-light"></span>
+                <span class="record_type tag is-light"></span>
+                <span class="accuracy tag is-light"></span>
+            </div>
+            <div class="examplars">
+                <span class="libraries"></span>
+                <span class="shelfmark"></span>
+            </div>
+            <span class="notes"></span>
+        </div>
     </div>
 </template>
 

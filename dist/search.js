@@ -62,6 +62,15 @@ function aggregateFacets(results, facetName) {
     });
     return facets;
 }
+// Function to add text or hide element
+function addTextOrHide(text, element) {
+    if (text) {
+        element.innerHTML = text;
+    }
+    else {
+        element.style.display = 'none';
+    }
+}
 // Function to render the results
 function renderResults(paginatedResults) {
     searchResultsCount.innerHTML = `${paginatedResults.totalResults} result(s)`;
@@ -72,15 +81,40 @@ function renderResults(paginatedResults) {
     }
     paginatedResults.results.forEach(doc => {
         const output = document.importNode(template.content, true);
-        const title = output.querySelector("h3");
-        const instr = output.querySelector("p.instr");
-        const summary = output.querySelector("p.text");
+        const header = output.querySelector("h3");
         const preview = output.querySelector("iframe.preview");
-        title.innerHTML = doc.id;
-        title.addEventListener('click', togglePreview);
-        summary.innerHTML = doc.body.substring(0, 200) + '...';
+        const rism = output.querySelector("div.rism");
+        const rism_link = output.querySelector("span.rism_link");
+        const composer = output.querySelector("span.composer");
+        const title = output.querySelector("span.cornetto-title");
+        const instr = output.querySelector("span.instr");
+        const coeff = output.querySelector("span.coeff");
+        const source_type = output.querySelector("span.source_type");
+        const record_type = output.querySelector("span.record_type");
+        const accuracy = output.querySelector("span.accuracy");
+        const libraries = output.querySelector("span.libraries");
+        const shelfmark = output.querySelector("span.shelfmark");
+        const notes = output.querySelector("span.notes");
+        header.innerHTML = doc.id;
+        if (doc.rism_no) {
+            rism_link.innerHTML = `sources/${doc.rism_no}`;
+            preview.setAttribute("src", `https://rism.online/sources/${doc.rism_no}`);
+            rism.addEventListener('click', togglePreview);
+        }
+        else {
+            rism.style.display = 'none';
+        }
+        addTextOrHide(doc.composer, composer);
+        let titleStr = (doc.title.length > 200) ? doc.title.substring(0, 200) + ' ...' : doc.title;
+        title.innerHTML = titleStr;
         instr.innerHTML = doc.instr.join(", ");
-        preview.setAttribute("src", doc.id);
+        addTextOrHide(doc.coeff, coeff);
+        addTextOrHide(doc.record_type, record_type);
+        addTextOrHide(doc.source_type, source_type);
+        addTextOrHide(doc.accuracy, accuracy);
+        addTextOrHide(doc.libraries, libraries);
+        addTextOrHide(doc.shelfmark, shelfmark);
+        addTextOrHide(doc.notes, notes);
         searchResultsDiv.appendChild(output);
     });
 }
@@ -183,10 +217,19 @@ fetch("./cornetto-database.json")
     });
     // Create the lunr index
     const idx = lunr(function () {
-        this.field('body');
         this.ref('id');
+        this.field('coeff');
+        this.field('rism_no');
+        this.field('record_type');
+        this.field('source_type');
         this.field('composer');
+        this.field('title');
         this.field('instr');
+        this.field('libraries');
+        this.field('shelfmark');
+        this.field('accuracy');
+        this.field('notes');
+        this.field('work_needed');
         documents.forEach(doc => {
             this.add(doc);
         });
@@ -222,7 +265,6 @@ fetch("./cornetto-database.json")
     });
     console.log(query);
     let idxResults = idx.search(query.join(" "));
-    //console.log(idxResults);
     // Map results to the original documents
     let searchResults = idxResults.map(function (result) {
         return getDocumentById(result.ref);
